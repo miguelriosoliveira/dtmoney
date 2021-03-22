@@ -1,6 +1,13 @@
+import axios from 'axios';
+import { useEffect } from 'react';
+
 import { Container } from './styles';
 
 export function TransactionTable() {
+	useEffect(() => {
+		// axios.get()
+	}, []);
+
 	return (
 		<Container>
 			<table>
