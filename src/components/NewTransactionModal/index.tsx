@@ -1,27 +1,38 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import Modal, { Props as ModalProps } from 'react-modal';
+import Modal from 'react-modal';
 
 import closeImg from '../../assets/close.svg';
 import incomeImg from '../../assets/income.svg';
 import outcomeImg from '../../assets/outcome.svg';
+import { api } from '../../services/api';
 
 import { Container, RadioBox, TransationTypeContainer } from './styles';
 
+interface ModalProps {
+	isOpen: boolean;
+	onRequestClose: () => void;
+}
+
 export function NewTransactionModal({ isOpen, onRequestClose }: ModalProps) {
-	const [type, setType] = useState('deposit');
-	const [fields, setFields] = useState({
+	const [formData, setFormData] = useState({
 		title: '',
 		value: 0,
+		type: 'deposit',
 		category: '',
 	});
 
 	function handleChangeInput({ target: { name, value } }: ChangeEvent<HTMLInputElement>) {
-		setFields({ ...fields, [name]: value });
+		setFormData({ ...formData, [name]: value });
+	}
+
+	function handleClickType(type: 'deposit' | 'withdraw') {
+		return () => setFormData({ ...formData, type });
 	}
 
 	function handleCreateNewTransaction(event: FormEvent) {
 		event.preventDefault();
-		console.log({ ...fields, type });
+		api.post('transactions', formData);
+		onRequestClose();
 	}
 
 	return (
@@ -44,8 +55,8 @@ export function NewTransactionModal({ isOpen, onRequestClose }: ModalProps) {
 				<TransationTypeContainer>
 					<RadioBox
 						type="button"
-						onClick={() => setType('deposit')}
-						isActive={type === 'deposit'}
+						onClick={handleClickType('deposit')}
+						isActive={formData.type === 'deposit'}
 						activeColor="green"
 					>
 						<img src={incomeImg} alt="Entrada" />
@@ -54,8 +65,8 @@ export function NewTransactionModal({ isOpen, onRequestClose }: ModalProps) {
 
 					<RadioBox
 						type="button"
-						onClick={() => setType('withdraw')}
-						isActive={type === 'withdraw'}
+						onClick={handleClickType('withdraw')}
+						isActive={formData.type === 'withdraw'}
 						activeColor="red"
 					>
 						<img src={outcomeImg} alt="Saída" />
