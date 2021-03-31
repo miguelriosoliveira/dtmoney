@@ -16,7 +16,7 @@ interface ModalProps {
 export function NewTransactionModal({ isOpen, onRequestClose }: ModalProps) {
 	const [formData, setFormData] = useState({
 		title: '',
-		value: 0,
+		amount: 0,
 		type: 'deposit',
 		category: '',
 	});
@@ -50,7 +50,7 @@ export function NewTransactionModal({ isOpen, onRequestClose }: ModalProps) {
 				<h2>Cadastrar Transação</h2>
 
 				<input name="title" placeholder="Título" onChange={handleChangeInput} />
-				<input name="value" type="number" placeholder="Valor" onChange={handleChangeInput} />
+				<input name="amount" type="number" placeholder="Valor" onChange={handleChangeInput} />
 
 				<TransationTypeContainer>
 					<RadioBox
