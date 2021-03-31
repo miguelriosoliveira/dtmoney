@@ -50,7 +50,7 @@ export function TransactionTable() {
 						transactions.map(({ id, title, amount, type, category, createdAt }) => (
 							<tr key={id}>
 								<td>{title}</td>
-								<td className={type}>{formatCurrency(amount)}</td>
+								<td className={type}>{formatCurrency(type === 'withdraw' ? -amount : amount)}</td>
 								<td>{category}</td>
 								<td>{formatDate(new Date(createdAt))}</td>
 							</tr>
