@@ -4,11 +4,28 @@ import incomeImg from '../../assets/income.svg';
 import outcomeImg from '../../assets/outcome.svg';
 import totalImg from '../../assets/total.svg';
 import { TransactionsContext } from '../../TransactionsContext';
+import { formatCurrency } from '../../utils/formatter';
 
 import { Container } from './styes';
 
 export function Summary() {
-	const data = useContext(TransactionsContext);
+	const transactions = useContext(TransactionsContext);
+
+	const { income, outcome, total } = transactions.reduce(
+		(acc, transaction) => {
+			const type = transaction.type === 'deposit' ? 'income' : 'outcome';
+			return {
+				...acc,
+				[type]: acc[type] + transaction.amount,
+				total: acc.total + transaction.amount,
+			};
+		},
+		{
+			income: 0,
+			outcome: 0,
+			total: 0,
+		},
+	);
 
 	return (
 		<Container>
@@ -17,7 +34,7 @@ export function Summary() {
 					<p>Entradas</p>
 					<img src={incomeImg} alt="Entradas" />
 				</header>
-				<strong>R$ 1000,00</strong>
+				<strong>{formatCurrency(income)}</strong>
 			</div>
 
 			<div>
@@ -25,7 +42,7 @@ export function Summary() {
 					<p>Saídas</p>
 					<img src={outcomeImg} alt="Saídas" />
 				</header>
-				<strong>-R$ 100,00</strong>
+				<strong>{formatCurrency(-outcome)}</strong>
 			</div>
 
 			<div className="highlight-background">
@@ -33,7 +50,7 @@ export function Summary() {
 					<p>Total</p>
 					<img src={totalImg} alt="Total" />
 				</header>
-				<strong>R$ 900,00</strong>
+				<strong>{formatCurrency(total)}</strong>
 			</div>
 		</Container>
 	);
