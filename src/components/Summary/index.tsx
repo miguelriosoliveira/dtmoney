@@ -9,7 +9,7 @@ import { formatCurrency } from '../../utils/formatter';
 import { Container } from './styes';
 
 export function Summary() {
-	const transactions = useContext(TransactionsContext);
+	const { transactions } = useContext(TransactionsContext);
 
 	const { income, outcome, total } = transactions.reduce(
 		(acc, transaction) => {
