@@ -13,19 +13,24 @@ interface ModalProps {
 	onRequestClose: () => void;
 }
 
+const INITIAL_STATE: TransactionInput = {
+	title: '',
+	amount: 0,
+	type: 'deposit',
+	category: '',
+};
+
 export function NewTransactionModal({ isOpen, onRequestClose }: ModalProps) {
 	const { createTransaction } = useContext(TransactionsContext);
 
-	const [formData, setFormData] = useState<TransactionInput>({
-		title: '',
-		amount: 0,
-		type: 'deposit',
-		category: '',
-	});
+	const [formData, setFormData] = useState<TransactionInput>(INITIAL_STATE);
 
-	function handleChangeInput({ target: { name, value } }: ChangeEvent<HTMLInputElement>) {
-		const valueSanitized = name === 'amount' ? Number(value) : value;
-		setFormData({ ...formData, [name]: valueSanitized });
+	function handleChangeTextInput({ target: { name, value } }: ChangeEvent<HTMLInputElement>) {
+		setFormData({ ...formData, [name]: value });
+	}
+
+	function handleChangeNumberInput({ target: { name, value } }: ChangeEvent<HTMLInputElement>) {
+		setFormData({ ...formData, [name]: Number(value) });
 	}
 
 	function handleClickType(type: 'deposit' | 'withdraw') {
@@ -34,7 +39,15 @@ export function NewTransactionModal({ isOpen, onRequestClose }: ModalProps) {
 
 	async function handleCreateNewTransaction(event: FormEvent) {
 		event.preventDefault();
-		await createTransaction(formData);
+
+		try {
+			await createTransaction(formData);
+		} catch (err) {
+			console.error('Error creating transaction', err);
+			return;
+		}
+
+		setFormData(INITIAL_STATE);
 		onRequestClose();
 	}
 
@@ -52,8 +65,14 @@ export function NewTransactionModal({ isOpen, onRequestClose }: ModalProps) {
 			<Container onSubmit={handleCreateNewTransaction}>
 				<h2>Cadastrar Transação</h2>
 
-				<input name="title" placeholder="Título" onChange={handleChangeInput} />
-				<input name="amount" type="number" placeholder="Valor" onChange={handleChangeInput} />
+				<input required name="title" placeholder="Título" onChange={handleChangeTextInput} />
+				<input
+					required
+					name="amount"
+					type="number"
+					placeholder="Valor"
+					onChange={handleChangeNumberInput}
+				/>
 
 				<TransationTypeContainer>
 					<RadioBox
@@ -77,7 +96,7 @@ export function NewTransactionModal({ isOpen, onRequestClose }: ModalProps) {
 					</RadioBox>
 				</TransationTypeContainer>
 
-				<input name="category" placeholder="Categoria" onChange={handleChangeInput} />
+				<input required name="category" placeholder="Categoria" onChange={handleChangeTextInput} />
 
 				<button type="submit">Cadastrar</button>
 			</Container>

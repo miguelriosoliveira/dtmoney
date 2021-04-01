@@ -8,16 +8,26 @@ import { formatCurrency } from '../../utils/formatter';
 
 import { Container } from './styes';
 
+interface TypesDict {
+	[key: string]: ['income' | 'outcome', number];
+}
+
 export function Summary() {
 	const { transactions } = useContext(TransactionsContext);
 
 	const { income, outcome, total } = transactions.reduce(
 		(acc, transaction) => {
-			const type = transaction.type === 'deposit' ? 'income' : 'outcome';
+			const TYPES: TypesDict = {
+				deposit: ['income', transaction.amount],
+				withdraw: ['outcome', -transaction.amount],
+			};
+
+			const [type, amountSigned] = TYPES[transaction.type];
+
 			return {
 				...acc,
-				[type]: acc[type] + transaction.amount,
-				total: acc.total + transaction.amount,
+				[type]: acc[type] + amountSigned,
+				total: acc.total + amountSigned,
 			};
 		},
 		{
@@ -42,7 +52,7 @@ export function Summary() {
 					<p>Saídas</p>
 					<img src={outcomeImg} alt="Saídas" />
 				</header>
-				<strong>{formatCurrency(-outcome)}</strong>
+				<strong>{formatCurrency(outcome)}</strong>
 			</div>
 
 			<div className="highlight-background">

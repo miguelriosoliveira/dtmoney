@@ -44,9 +44,12 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
 	}, []);
 
 	async function createTransaction(transactionData: TransactionInput) {
-		return api
-			.post<TransactionPostProps>('transactions', transactionData)
-			.then(response => setTransactions([...transactions, response.data.transaction]));
+		try {
+			const response = await api.post<TransactionPostProps>('transactions', transactionData);
+			setTransactions([...transactions, response.data.transaction]);
+		} catch (error) {
+			console.error('Error creating transaction', error);
+		}
 	}
 
 	return (
